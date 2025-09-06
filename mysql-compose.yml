@@ -1,0 +1,30 @@
+services:
+  localmysql:
+    image: mysql:latest
+    user: "1000:1000" # Run as non-root user
+    ports:
+      - "3306:3306" # Connection URI will be localhost:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: localdb
+      MYSQL_USER: localuser
+      MYSQL_PASSWORD: localpassword
+    volumes:
+      - localmysql-data:/var/lib/mysql
+
+  kriyamysql:
+    image: mysql:latest
+    user: "1000:1000" # Run as non-root user
+    ports:
+      - "3307:3306" # Connection URI will be localhost:3307
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: kriyadb
+      MYSQL_USER: kriyauser
+      MYSQL_PASSWORD: kriyapassword
+    volumes:
+      - kriyamysql-data:/var/lib/mysql
+
+volumes:
+  localmysql-data:
+  kriyamysql-data:
