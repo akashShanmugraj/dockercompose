@@ -31,6 +31,22 @@ services:
       POSTGRES_PASSWORD: mysecretpassword
     networks:
       - metanet1
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    hostname: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: metabase
+      MONGO_INITDB_ROOT_PASSWORD: mysecretpassword
+    ports:
+      - "27017:27017"
+    volumes:
+      - metabasemongodata:/data/db
+    networks:
+      - metanet1
+    restart: unless-stopped
 networks:
   metanet1:
     driver: bridge
+volumes:
+  metabasemongodata:

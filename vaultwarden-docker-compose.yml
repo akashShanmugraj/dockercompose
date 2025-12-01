@@ -1,0 +1,17 @@
+version: "3"
+
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+    environment:
+      WEBSOCKET_ENABLED: "true"        # Enable WebSocket sync
+      ADMIN_TOKEN: "AHE50mY3KxtPzFhqApHU" # Set this to a strong token for the admin panel
+      SIGNUPS_ALLOWED: "false"         # Prevent open signups for security
+      TZ: "Asia/Kolkata"               # Set your timezone
+    volumes:
+      - ./vw_data:/data            # Persists Vaultwarden data
+    ports:
+      - "6991:80"                        # Main web interface
+      - "6990:3012"                    # WebSocket port

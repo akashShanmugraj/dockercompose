@@ -1,0 +1,24 @@
+version: "3.3"
+
+services:
+  traefik:
+    image: "traefik:v3.5"
+    container_name: "traefik"
+    command:
+      - "--api.insecure=true"                   # Enable Traefik dashboard (for dev use)
+      - "--providers.docker=true"               # Enable Docker provider for service discovery
+      - "--providers.docker.exposedbydefault=false" # Only route to containers with traefik.enable=true
+      - "--entrypoints.web.address=:80"         # Listen on HTTP 80
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro" # Allow Traefik to see containers
+
+  whoami:
+    image: "traefik/whoami"
+    container_name: "simple-service"
+    labels:
+      - "traefik.enable=true"                                 # Explicitly enable routing for this container
+      - "traefik.http.routers.whoami.rule=Host(`whoami.localhost`)" # Route based on domain
+      - "traefik.http.routers.whoami.entrypoints=web"

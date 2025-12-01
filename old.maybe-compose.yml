@@ -1,0 +1,44 @@
+services:
+  maybeapp:
+    container_name: maybe-app
+    image: maybe:old
+    volumes:
+      - ./maybeappvolume:/rails/storage
+    ports:
+      - 4000:3000
+    restart: unless-stopped
+    environment:
+      SELF_HOSTED: "true"
+      RAILS_FORCE_SSL: "false"
+      RAILS_ASSUME_SSL: "false"
+      GOOD_JOB_EXECUTION_MODE: async
+      SECRET_KEY_BASE: 0cf17464d2836049254a3c040a69a4fccb00bff80987378e801ce3cf717aab06e57e89946b39ee60fd0f96343dbcbdde16d6177513a4eb3b25d454fff9b34ecb
+      DB_HOST: postgres
+      POSTGRES_DB: ${POSTGRES_DB:-maybe_production}
+      POSTGRES_USER: maybeakash
+      POSTGRES_PASSWORD: d950c35080e3
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    container_name: maybe-postgres
+    image: postgres:16
+    restart: unless-stopped
+    ports:
+      - 4001:5432
+    volumes:
+      - ./maybepostgresvolume:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: maybeakash
+      POSTGRES_DB: maybe_production
+      POSTGRES_PASSWORD: d950c35080e3
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  maybeappvolume:
+  maybepostgresvolume:

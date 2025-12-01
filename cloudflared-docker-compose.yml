@@ -1,0 +1,15 @@
+services:
+  cloudflared:
+    image: cloudflare/cloudflared
+    container_name: cloudflared
+    environment:
+      - TZ=India/Calcutta # Change this to your timezone
+      - TUNNEL_TOKEN=eyJhIjoiMDIxMmE4ODFkOWRjYTE5OTJiMjU3NDdjMzZhZmFiNmUiLCJ0IjoiM2UzMzM5MjEtNzNiMy00MTY0LWE1YzctYWExZGY5Mjg0ZjIyIiwicyI6Ik4yWmtNR1JpWVdFdE5XTTVZaTAwTXpJeUxXSTRZVGd0WVRObU5qbGlNamd5Tm1SaSJ9
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    networks:
+      - cloudflared
+
+networks:
+  cloudflared:
+    name: cloudflared

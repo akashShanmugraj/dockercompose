@@ -1,0 +1,177 @@
+#!/bin/bash
+
+# dockback - Docker container backup script
+
+# Display help/usage information
+show_help() {
+    echo "Usage: dockback --id CONTAINER_ID --name FRIENDLY_NAME"
+    echo ""
+    echo "Options:"
+    echo "  --id CONTAINER_ID     The ID of the Docker container to backup"
+    echo "  --name FRIENDLY_NAME  A friendly name to include in the backup filename"
+    echo "  --help                Display this help message"
+    echo ""
+    echo "Example:"
+    echo "  dockback --id 9udsfnlnn453 --name webapp"
+}
+
+# Initialize variables
+CONTAINER_ID=""
+FRIENDLY_NAME=""
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --id)
+            CONTAINER_ID="$2"
+            shift 2
+            ;;
+        --name)
+            FRIENDLY_NAME="$2"
+            shift 2
+            ;;
+        --help)
+            show_help
+            exit 0
+            ;;
+        *)
+            echo "Error: Unknown option $1"
+            show_help
+            exit 1
+            ;;
+    esac
+done
+
+# Check for required arguments
+if [[ -z "$CONTAINER_ID" ]]; then
+    echo "Error: Container ID is required (--id)"
+    show_help
+    exit 1
+fi
+
+if [[ -z "$FRIENDLY_NAME" ]]; then
+    echo "Error: Friendly name is required (--name)"
+    show_help
+    exit 1
+fi
+
+# Create timestamp for the backup filename
+TIMESTAMP=$(date +"%Y%m%d%H%M%S")
+BACKUP_NAME="${CONTAINER_ID}_${FRIENDLY_NAME}_${TIMESTAMP}"
+
+echo "Starting backup of container ${CONTAINER_ID} (${FRIENDLY_NAME})..."
+
+# Create a new image from the container
+echo "Creating image from container..."
+if ! docker commit "$CONTAINER_ID" "temp_backup_${BACKUP_NAME}"; then
+    echo "Error: Failed to create image from container"
+    exit 1
+fi
+
+# Save the image to a tar file
+echo "Saving image to file..."
+if ! docker save "temp_backup_${BACKUP_NAME}" -o "${BACKUP_NAME}.tar"; then
+    echo "Error: Failed to save the image"
+    # Clean up temporary image
+    docker rmi "temp_backup_${BACKUP_NAME}" >/dev/null 2>&1
+    exit 1
+fi
+
+# Clean up temporary image
+echo "Cleaning up temporary image..."
+if ! docker rmi "temp_backup_${BACKUP_NAME}"; then
+    echo "Warning: Failed to remove temporary image 'temp_backup_${BACKUP_NAME}'"
+fi
+
+echo "Backup completed successfully!"
+echo "Backup saved as: ${BACKUP_NAME}.tar"
+echo "To restore this container, use: docker load -i ${BACKUP_NAME}.tar"
+#!/bin/bash
+
+# dockback - Docker container backup script
+
+# Display help/usage information
+show_help() {
+    echo "Usage: dockback --id CONTAINER_ID --name FRIENDLY_NAME"
+    echo ""
+    echo "Options:"
+    echo "  --id CONTAINER_ID     The ID of the Docker container to backup"
+    echo "  --name FRIENDLY_NAME  A friendly name to include in the backup filename"
+    echo "  --help                Display this help message"
+    echo ""
+    echo "Example:"
+    echo "  dockback --id 9udsfnlnn453 --name webapp"
+}
+
+# Initialize variables
+CONTAINER_ID=""
+FRIENDLY_NAME=""
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --id)
+            CONTAINER_ID="$2"
+            shift 2
+            ;;
+        --name)
+            FRIENDLY_NAME="$2"
+            shift 2
+            ;;
+        --help)
+            show_help
+            exit 0
+            ;;
+        *)
+            echo "Error: Unknown option $1"
+            show_help
+            exit 1
+            ;;
+    esac
+done
+
+# Check for required arguments
+if [[ -z "$CONTAINER_ID" ]]; then
+    echo "Error: Container ID is required (--id)"
+    show_help
+    exit 1
+fi
+
+if [[ -z "$FRIENDLY_NAME" ]]; then
+    echo "Error: Friendly name is required (--name)"
+    show_help
+    exit 1
+fi
+
+# Create timestamp for the backup filename
+TIMESTAMP=$(date +"%Y%m%d%H%M%S")
+BACKUP_NAME="${CONTAINER_ID}_${FRIENDLY_NAME}_${TIMESTAMP}"
+
+echo "Starting backup of container ${CONTAINER_ID} (${FRIENDLY_NAME})..."
+
+# Create a new image from the container
+echo "Creating image from container..."
+if ! docker commit "$CONTAINER_ID" "temp_backup_${BACKUP_NAME}"; then
+    echo "Error: Failed to create image from container"
+    exit 1
+fi
+
+# Save the image to a tar file
+echo "Saving image to file..."
+if ! docker save "temp_backup_${BACKUP_NAME}" -o "${BACKUP_NAME}.tar"; then
+    echo "Error: Failed to save the image"
+    # Clean up temporary image
+    docker rmi "temp_backup_${BACKUP_NAME}" >/dev/null 2>&1
+    exit 1
+fi
+
+# Clean up temporary image
+echo "Cleaning up temporary image..."
+if ! docker rmi "temp_backup_${BACKUP_NAME}"; then
+    echo "Warning: Failed to remove temporary image 'temp_backup_${BACKUP_NAME}'"
+fi
+
+echo "Backup completed successfully!"
+echo "Backup saved as: ${BACKUP_NAME}.tar"
+echo "To restore this container, use: docker load -i ${BACKUP_NAME}.tar"
+

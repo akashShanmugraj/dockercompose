@@ -1,0 +1,30 @@
+services:
+  ghccpostgres:
+    image: postgres:latest
+    container_name: ghccpostgres
+    restart: always
+    environment:
+      POSTGRES_USER: ghccadmin
+      POSTGRES_PASSWORD: 0886745d90635a943464
+      POSTGRES_DB: ghccdefault
+    volumes:
+      - ./volumes/ghccpgdata:/var/lib/postgresql/data
+    ports:
+      - "6997:5432"
+      
+  ghccmongo:
+    image: mongo:latest
+    container_name: ghccmongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ghccadmin
+      MONGO_INITDB_ROOT_PASSWORD: cdfc74c463e14e6cbd05
+    ports:
+      - "6996:27017"
+    command: mongod --bind_ip 0.0.0.0
+    volumes:
+      - ./volumes/ghccmongodbdata:/data/db
+    restart: unless-stopped
+
+volumes:
+  ghccpgdata:
+  ghccmongodbdata:

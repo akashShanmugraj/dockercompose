@@ -1,0 +1,17 @@
+services:
+  umami:
+    image: ghcr.io/github-campus-club-psgct/ghcc:umami
+    ports:
+      - "6995:3000"
+    environment:
+      DATABASE_TYPE: postgresql
+      DATABASE_URL: postgresql://ghccadmin:0886745d90635a943464@192.168.29.185:6997/ghccdefault
+      APP_SECRET: eb5e5580b79cb1aeadad820cf0dc977744d957ab
+  
+    init: true
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl http://localhost:3000/api/heartbeat"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
